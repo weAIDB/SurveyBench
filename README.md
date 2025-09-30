@@ -70,10 +70,9 @@ python run_content_eval.py --mode overall --method AutoSurvey --model gpt-4o-min
   - `richness` → Evaluate non-textual richness.
   - `overall` → Run all three evaluations (`content with_ref`, `outline`, `richness`).
 - `setting` : (Only valid if `--mode content`) Content evaluation setting. Options:
-  - `with_ref` → Compare LLM survey against the human-written survey (requires filename alignment).
+  - `with_ref` → Compare LLM survey against the human-written survey.
   - `without_ref_chapter` → Evaluate content chapter by chapter without human reference.
   - `without_ref_document` → Evaluate the whole document without human reference.
-    Default: with_ref.
 - `--method` : The method name (directory under ./data/) to be evaluated, e.g. AutoSurvey, SurveyForge, LLMxMR-V2.
 - `--model` : The model used for evaluation (e.g. gpt-4o-mini).
 - `--api_key` : API key for the evaluation model service.
