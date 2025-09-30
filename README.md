@@ -43,7 +43,7 @@ For example:
 
 
 - **Survey format requirement:**  
-All survey files must follow a consistent Markdown heading structure, so that sections and subsections can be correctly parsed: 
+All survey files must follow a consistent Markdown heading structure.
 For example: 
 ```
 # Title
