@@ -23,16 +23,11 @@ SurveyBench is a fine-grained, quiz-driven evaluation framework, featuring
     ./data/{MethodName}/
     ```
 
-    For example:
-    ```
-    ./data/AutoSurvey/Multimodal Large Language Models.md
-    ./data/SurveyForge/Graph Neural Networks.md
-    ```
-
 2. Human-written reference surveys should be placed under:
     ```
     ./data/HumanSurvey/
     ```
+
 **Requirements:**
 
 - **Filename alignment:**  
