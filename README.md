@@ -18,41 +18,45 @@ SurveyBench is a fine-grained, quiz-driven evaluation framework, featuring
 ### Data Prepration
 
 1. Place all generated survey files (`.md`) into the directory:
-```
-./data/{MethodName}/
-```
-For example:
-```
-./data/AutoSurvey/Multimodal Large Language Models.md
-./data/SurveyForge/Graph Neural Networks.md
-```
+   
+    ```
+    ./data/{MethodName}/
+    ```
+
+    For example:
+    ```
+    ./data/AutoSurvey/Multimodal Large Language Models.md
+    ./data/SurveyForge/Graph Neural Networks.md
+    ```
 
 2. Human-written reference surveys should be placed under:
-```
-./data/HumanSurvey/
-```
+    ```
+    ./data/HumanSurvey/
+    ```
 **Requirements:**
 
 - **Filename alignment:**  
 For each topic, the `.md` filename must be **identical** between the LLM method directory and `HumanSurvey`.  
-For example:
-```
-./data/AutoSurvey/Multimodal Large Language Models.md
-./data/HumanSurvey/Multimodal Large Language Models.md
-```
+
+    For example:
+    ```
+    ./data/AutoSurvey/Multimodal Large Language Models.md
+    ./data/HumanSurvey/Multimodal Large Language Models.md
+    ```
 
 
 - **Survey format requirement:**  
 All survey files must follow a consistent Markdown heading structure.
-For example: 
-```
-# Title
-## 1 Introduction
-## 2 Section
-### 2.1 Subsection
-#### 2.1.1 Subsubsection
-...
-```
+
+    For example: 
+    ```
+    # Title
+    ## 1 Introduction
+    ## 2 Section
+    ### 2.1 Subsection
+    #### 2.1.1 Subsubsection
+    ...
+    ``` 
 
 ### Content-based Evaluation
 
