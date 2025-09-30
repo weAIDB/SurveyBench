@@ -12,7 +12,6 @@ def save_result(result, args):
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # 构建文件名
     if args.mode == 'content':
         filename = os.path.join(
             args.output_dir,

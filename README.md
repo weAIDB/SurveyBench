@@ -59,9 +59,8 @@ Here is an example command to evaluate the `AutoSurvey` method on content qualit
 
 ```bash
 cd src
-python run_content_eval.py --mode overall --method AutoSurvey --model gpt-4o-mini --api_key sk_xxx --api_url xxx
+python run_content_eval.py --mode overall --method AutoSurvey --model gpt-4o-mini --api_key sk_xxx --api_url xxx --output_dir './result/content'
 ```
-Results will be aggregated and saved in `src/result/content/`.
 
 
 
