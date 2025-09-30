@@ -8,14 +8,21 @@ from datetime import datetime
 from pathlib import Path
 
 
-def save_result(result, args, filename_suffix=""):
-    """Save evaluation results to JSON"""
-    os.makedirs("result/content", exist_ok=True)
+def save_result(result, args):
 
+    os.makedirs(args.output_dir, exist_ok=True)
+
+    # 构建文件名
     if args.mode == 'content':
-        filename = f"result/content/{args.mode}_{args.setting}_{args.method}{filename_suffix}.json"
+        filename = os.path.join(
+            args.output_dir,
+            f"{args.mode}_{args.setting}_{args.method}.json"
+        )
     else:
-        filename = f"result/content/{args.mode}_{args.method}{filename_suffix}.json"
+        filename = os.path.join(
+            args.output_dir,
+            f"{args.mode}_{args.method}.json"
+        )
 
     record = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -29,7 +36,8 @@ def save_result(result, args, filename_suffix=""):
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(record, f, ensure_ascii=False, indent=2)
 
-    print(f"✅ Results saved to {filename}")
+    print(f"Results saved to {filename}")
+
 
 
 def run_single(args, topic):
@@ -142,6 +150,8 @@ def get_parser():
                         help="API key")
     parser.add_argument('--api_url', default='', type=str,
                         help="API URL")
+    parser.add_argument('--output_dir', default='./result/content', type=str, 
+                        help="Output directory for results")
 
     return parser
 

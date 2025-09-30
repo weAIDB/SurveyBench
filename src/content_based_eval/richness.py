@@ -99,8 +99,7 @@ if __name__ == "__main__":
     for method, group in final_df.groupby("method"):
         avg_figs = group["figures"].mean()
         avg_tabs = group["tables"].mean()
-        total_length = group["length"].sum()
-        avg_richness = (group["figures"].sum() + group["tables"].sum()) / total_length * 1e5 if total_length > 0 else 0
+        avg_richness = group["richness"].mean()
         method_stats.append({
             "method": method,
             "avg_figures": avg_figs,
