@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 def save_result(result, args, filename_suffix=""):
-    """保存结果到 JSON 文件"""
+
     os.makedirs("result/content", exist_ok=True)
 
     topic_safe = args.topic.replace(" ", "_") if hasattr(args, "topic") else "ALL"
@@ -37,7 +37,7 @@ def save_result(result, args, filename_suffix=""):
 
 
 def run_single(args, topic):
-    """运行单个 topic 的 evaluation，返回 dict"""
+
     model, api_key, api_url = args.model, args.api_key, args.api_url
     method = args.method
     mode = args.mode
@@ -92,7 +92,7 @@ def run_single(args, topic):
 
 def main(args):
     if args.scope == "file":
-        # 单文件
+        # single file
         if args.mode == "overall":
             print("========== Overall Evaluation (File) ==========")
             topic = args.topic
@@ -118,7 +118,7 @@ def main(args):
             print(scores)
 
     elif args.scope == "dir":
-        # 整个目录
+        # directory
         data_dir = Path(f"../data/{args.method}")
         topics = [f.stem for f in data_dir.glob("*.md")]
         print(f"Find {len(topics)} survey files in {data_dir}.")
