@@ -20,12 +20,12 @@ SurveyBench is a fine-grained, quiz-driven evaluation framework, featuring
 1. Place all generated survey files (`.md`) into the directory:
    
     ```
-    ./data/{MethodName}/
+    src/data/{MethodName}/
     ```
 
 2. Human-written reference surveys should be placed under:
     ```
-    ./data/HumanSurvey/
+    src/data/HumanSurvey/
     ```
 
 **Requirements:**
@@ -35,8 +35,8 @@ For each topic, the `.md` filename must be **identical** between the LLM method 
 
     For example:
     ```
-    ./data/AutoSurvey/Multimodal Large Language Models.md
-    ./data/HumanSurvey/Multimodal Large Language Models.md
+    src/data/AutoSurvey/Multimodal Large Language Models.md
+    src/data/HumanSurvey/Multimodal Large Language Models.md
     ```
 
 
@@ -58,7 +58,8 @@ All survey files must follow a consistent Markdown heading structure.
 Here is an example command to evaluate the `AutoSurvey` method on content quality, outline quality and richness.
 
 ```bash
-python run_eval.py --mode overall --method AutoSurvey --model gpt-4o-mini --api_key sk_xxx --api_url xxx
+cd src
+python run_content_eval.py --mode overall --method AutoSurvey --model gpt-4o-mini --api_key sk_xxx --api_url xxx
 ```
 Results will be aggregated and saved in `src/result/content/`.
 
