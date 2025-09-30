@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-09-30 18:48:39",
+  "scope": "file",
+  "mode": "overall",
+  "setting": "with_ref",
+  "model": "gpt-4o-mini",
+  "method": "LLMxMR-V2",
+  "topic": "Multimodal Large Language Models",
+  "result": {
+    "content": {
+      "coverage": 5,
+      "coherence": 4,
+      "depth": 4,
+      "focus": 5,
+      "fluency": 4
+    },
+    "outline": {
+      "coverage": 4.0,
+      "relevance": 4.0,
+      "structure": 4.0
+    },
+    "richness": {
+      "figures": 8,
+      "tables": 6,
+      "richness": 10.065787108602654
+    }
+  }
+}

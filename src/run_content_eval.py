@@ -5,186 +5,205 @@ import argparse
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 
 
-def save_result(result, args):
+def save_result(result, args, filename_suffix=""):
+    """保存结果到 JSON 文件"""
     os.makedirs("result/content", exist_ok=True)
 
+    topic_safe = args.topic.replace(" ", "_") if hasattr(args, "topic") else "ALL"
+
     if args.mode == 'content':
-        filename = f"result/content/{args.mode}_{args.setting}_{args.method}_{args.topic.replace(' ', '_')}.json"
+        filename = f"result/content/{args.mode}_{args.setting}_{args.method}_{topic_safe}{filename_suffix}.json"
     else:
-        filename = f"result/content/{args.mode}_{args.method}_{args.topic.replace(' ', '_')}.json"
+        filename = f"result/content/{args.mode}_{args.method}_{topic_safe}{filename_suffix}.json"
 
     record = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "scope": args.scope,
         "mode": args.mode,
         "setting": getattr(args, "setting", None),
         "model": args.model,
         "method": args.method,
-        "topic": args.topic,
+        "topic": getattr(args, "topic", None),
         "result": result
     }
 
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(record, f, ensure_ascii=False, indent=2)
 
-    # print(f"Results saved to {filename}")
+    print(f"✅ Results saved to {filename}")
 
-def get_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', default='content', type=str, help='Evaluation mode: overall / content / outline / richness')
-    parser.add_argument('--setting', default='with_ref', type=str, help='Content quality evaluation setting: with_ref / without_ref_chapter / without_ref_document')
-    
-    parser.add_argument('--model', default='gpt-4o-mini', type=str, help='Model to use for evaluation')
-    parser.add_argument('--api_key', default='', type=str, help='API key for the model')
-    parser.add_argument('--api_url', default='', type=str, help='API URL for the model')
 
-    parser.add_argument('--method', default='AutoSurvey', type=str, help='Method to evaluate')
-    parser.add_argument('--topic', default='Multimodal Large Language Models', type=str, help='Topic to evaluate')
-
-    args = parser.parse_args()
-    return args
-
-def main(args):
+def run_single(args, topic):
+    """运行单个 topic 的 evaluation，返回 dict"""
     model, api_key, api_url = args.model, args.api_key, args.api_url
     method = args.method
-    topic = args.topic
     mode = args.mode
+    setting = getattr(args, "setting", "with_ref")
 
-    if mode == 'overall':
-        print("========== Overall Content-Based Evaluation ==========")
-
-        # 1. Content Evaluation (with_ref)
-        res_content = evaluate_content_compare(topic, model, method, api_key, api_url)
-        save_result(res_content, argparse.Namespace(**{**vars(args), "mode": "content", "setting": "with_ref"}))
-
-        print("---- Content Evaluation (w/ Ref.) ----")
-        print(f"Method: {method}")
-        print(f"Topic: {topic}")
-        print(f"  Coverage : {res_content[0]['coverage_score']['response']}")
-        print(f"  Coherence: {res_content[0]['coherence_score']['response']}")
-        print(f"  Depth    : {res_content[0]['depth_score']['response']}")
-        print(f"  Focus    : {res_content[0]['focus_score']['response']}")
-        print(f"  Fluency  : {res_content[0]['fluency_score']['response']}")
-
-        # 2. Outline Evaluation
-        res_outline = evaluate_outline(topic, model, method, api_key, api_url)
-        save_result(res_outline, argparse.Namespace(**{**vars(args), "mode": "outline"}))
-
-        coverage_scores = [res_outline[f"coverage_score_{i}"]["response"] for i in range(1, 3+1)]
-        relevance_scores = [res_outline[f"relevance_score_{i}"]["response"] for i in range(1, 3+1)]
-        structure_scores = [res_outline[f"structure_score_{i}"]["response"] for i in range(1, 3+1)]
-
-        avg_coverage = sum(int(s.strip().replace("Score:", "").replace("score:", "").replace("Score", "")) for s in coverage_scores) / len(coverage_scores)
-        avg_relevance = sum(int(s.strip().replace("Score:", "").replace("score:", "").replace("Score", "")) for s in relevance_scores) / len(relevance_scores)
-        avg_structure = sum(int(s.strip().replace("Score:", "").replace("score:", "").replace("Score", "")) for s in structure_scores) / len(structure_scores)
-
-        print("---- Outline Evaluation ----")
-        print(f"Method: {method}")
-        print(f"Topic: {topic}")
-        print(f"  Coverage : {avg_coverage:.2f}")
-        print(f"  Relevance: {avg_relevance:.2f}")
-        print(f"  Structure: {avg_structure:.2f}")
-
-        # 3. Richness Evaluation
-        res_richness = get_richness(f'../data/{method}/{topic}.md')
-        save_result(res_richness, argparse.Namespace(**{**vars(args), "mode": "richness"}))
-
-        print("---- Richness Evaluation ----")
-        print(f"Method: {method}")
-        print(f"Topic: {topic}")
-        print("  Figure Num.: {}, Table Num.: {}, Richness: {:.4f}".format(res_richness[0], res_richness[1], res_richness[3]))
-    
-
-    elif mode == 'content':
-        setting = args.setting
+    if mode == "content":
         if setting == "with_ref":
             res = evaluate_content_compare(topic, model, method, api_key, api_url)
-            save_result(res, args)
-            print("========== Content Evaluation Result (w/ Ref.) ==========")
-            print(f"Method: {method}")
-            print(f"Topic: {topic}")
-            print(f"  Coverage : {res[0]['coverage_score']['response']}")
-            print(f"  Coherence: {res[0]['coherence_score']['response']}")
-            print(f"  Depth    : {res[0]['depth_score']['response']}")
-            print(f"  Focus    : {res[0]['focus_score']['response']}")
-            print(f"  Fluency  : {res[0]['fluency_score']['response']}")
-
+            return {
+                "coverage": int(res[0]["coverage_score"]["response"]),
+                "coherence": int(res[0]["coherence_score"]["response"]),
+                "depth": int(res[0]["depth_score"]["response"]),
+                "focus": int(res[0]["focus_score"]["response"]),
+                "fluency": int(res[0]["fluency_score"]["response"]),
+            }
         elif setting == "without_ref_chapter":
             res = evaluate_content_chapter(topic, model, method, api_key, api_url)
-            save_result(res, args)
-            print("========== Content Evaluation Result (w/o Ref. Chapter-level) ==========")
-
             n = len(res)
-            avg_coverage = sum(int(item["coverage_score"]["response"]) for item in res) / n
-            avg_coherence = sum(int(item["coherence_score"]["response"]) for item in res) / n
-            avg_depth = sum(int(item["depth_score"]["response"]) for item in res) / n
-            avg_focus = sum(int(item["focus_score"]["response"]) for item in res) / n
-            avg_fluency = sum(int(item["fluency_score"]["response"]) for item in res) / n
-
-            print(f"Method: {method}")
-            print(f"Topic: {topic}")
-            print(f"  Coverage : {avg_coverage:.2f}")
-            print(f"  Coherence: {avg_coherence:.2f}")
-            print(f"  Depth    : {avg_depth:.2f}")
-            print(f"  Focus    : {avg_focus:.2f}")
-            print(f"  Fluency  : {avg_fluency:.2f}")
-
+            return {
+                "coverage": sum(int(x["coverage_score"]["response"]) for x in res) / n,
+                "coherence": sum(int(x["coherence_score"]["response"]) for x in res) / n,
+                "depth": sum(int(x["depth_score"]["response"]) for x in res) / n,
+                "focus": sum(int(x["focus_score"]["response"]) for x in res) / n,
+                "fluency": sum(int(x["fluency_score"]["response"]) for x in res) / n,
+            }
         elif setting == "without_ref_document":
             res = evaluate_content_document(topic, model, method, api_key, api_url)
-            save_result(res, args)
-            print("========== Content Evaluation Result (w/o Ref. Document-level) ==========")
+            return {
+                "coverage": int(res[0]["coverage_score"]["response"]),
+                "coherence": int(res[0]["coherence_score"]["response"]),
+                "depth": int(res[0]["depth_score"]["response"]),
+                "focus": int(res[0]["focus_score"]["response"]),
+                "fluency": int(res[0]["fluency_score"]["response"]),
+            }
 
-            print(f"Method: {method}")
-            print(f"Topic: {topic}")
-            print(f"  Coverage : {res[0]['coverage_score']['response']}")
-            print(f"  Coherence: {res[0]['coherence_score']['response']}")
-            print(f"  Depth    : {res[0]['depth_score']['response']}")
-            print(f"  Focus    : {res[0]['focus_score']['response']}")
-            print(f"  Fluency  : {res[0]['fluency_score']['response']}")
-
-    elif mode == 'outline':
+    elif mode == "outline":
         res = evaluate_outline(topic, model, method, api_key, api_url)
-        save_result(res, args)
-        print("========== Outline Evaluation Result ==========")
+        def parse(val):
+            return int(val.strip().replace("Score:", "").replace("score:", "").replace("Score", ""))
+        return {
+            "coverage": sum(parse(res[f"coverage_score_{i}"]["response"]) for i in range(1, 4)) / 3,
+            "relevance": sum(parse(res[f"relevance_score_{i}"]["response"]) for i in range(1, 4)) / 3,
+            "structure": sum(parse(res[f"structure_score_{i}"]["response"]) for i in range(1, 4)) / 3,
+        }
 
-        coverage_scores = [res[f"coverage_score_{i}"]["response"] for i in range(1, 4)]
-        relevance_scores = [res[f"relevance_score_{i}"]["response"] for i in range(1, 4)]
-        structure_scores = [res[f"structure_score_{i}"]["response"] for i in range(1, 4)]
-
-        avg_coverage = sum(int(s) for s in coverage_scores) / len(coverage_scores)
-        avg_relevance = sum(int(s) for s in relevance_scores) / len(relevance_scores)
-        avg_structure = sum(int(s) for s in structure_scores) / len(structure_scores)
-
-        print(f"Method: {method}")
-        print(f"Topic: {topic}")
-        print(f"  Coverage : {avg_coverage:.2f}")
-        print(f"  Relevance: {avg_relevance:.2f}")
-        print(f"  Structure: {avg_structure:.2f}")
-
-    elif mode == 'richness':
+    elif mode == "richness":
         res = get_richness(f'../data/{method}/{topic}.md')
-        save_result(res, args)
-        print("========== Richness Evaluation Result ==========")
-        print(f"Method: {method}")
-        print(f"Topic: {topic}")
-        print("  Figure Num.: {}, Table Num.: {}, Richness: {:.4f}".format(res[0], res[1], res[3]))
+        return {"figures": res[0], "tables": res[1], "richness": res[3]}
 
-    
+    return {}
+
+
+def main(args):
+    if args.scope == "file":
+        # 单文件
+        if args.mode == "overall":
+            print("========== Overall Evaluation (File) ==========")
+            topic = args.topic
+
+            content_scores = run_single(argparse.Namespace(**{**vars(args), "mode": "content", "setting": "with_ref"}), topic)
+            outline_scores = run_single(argparse.Namespace(**{**vars(args), "mode": "outline"}), topic)
+            richness_scores = run_single(argparse.Namespace(**{**vars(args), "mode": "richness"}), topic)
+
+            overall = {"content": content_scores, "outline": outline_scores, "richness": richness_scores}
+            save_result(overall, args)
+
+            print("---- Content ----")
+            print(content_scores)
+            print("---- Outline ----")
+            print(outline_scores)
+            print("---- Richness ----")
+            print(richness_scores)
+
+        else:
+            scores = run_single(args, args.topic)
+            save_result(scores, args)
+            print(f"========== {args.mode.capitalize()} Evaluation (File) ==========")
+            print(scores)
+
+    elif args.scope == "dir":
+        # 整个目录
+        data_dir = Path(f"../data/{args.method}")
+        topics = [f.stem for f in data_dir.glob("*.md")]
+        print(f"Find {len(topics)} survey files in {data_dir}.")
+
+        if args.mode == "overall":
+            all_content, all_outline, all_richness = [], [], []
+            for topic in topics:
+                all_content.append(run_single(argparse.Namespace(**{**vars(args), "mode": "content", "setting": "with_ref"}), topic))
+                all_outline.append(run_single(argparse.Namespace(**{**vars(args), "mode": "outline"}), topic))
+                all_richness.append(run_single(argparse.Namespace(**{**vars(args), "mode": "richness"}), topic))
+
+            def avg_dict(list_of_dicts):
+                return {k: sum(d[k] for d in list_of_dicts) / len(list_of_dicts) for k in list_of_dicts[0]}
+
+            avg_content = avg_dict(all_content)
+            avg_outline = avg_dict(all_outline)
+            avg_richness = avg_dict(all_richness)
+
+            overall = {"content_avg": avg_content, "outline_avg": avg_outline, "richness_avg": avg_richness}
+            save_result(overall, args, filename_suffix="_dir")
+
+            print("========== Overall Evaluation (Dir) ==========")
+            print("---- Content (avg) ----")
+            print(avg_content)
+            print("---- Outline (avg) ----")
+            print(avg_outline)
+            print("---- Richness (avg) ----")
+            print(avg_richness)
+
+        else:
+            all_scores = []
+            for topic in topics:
+                all_scores.append(run_single(args, topic))
+            avg_scores = {k: sum(s[k] for s in all_scores) / len(all_scores) for k in all_scores[0]}
+            save_result(avg_scores, args, filename_suffix="_dir")
+
+            print(f"========== {args.mode.capitalize()} Evaluation (Dir) ==========")
+            print(avg_scores)
+
+
+def get_parser():
+    parser = argparse.ArgumentParser(description="SurveyBench Evaluation")
+
+    subparsers = parser.add_subparsers(dest="scope", required=True,
+                                       help="Choose the evaluation scope: file or dir")
+
+    # file sub-command
+    parser_file = subparsers.add_parser("file", help="Evaluate a single topic")
+    parser_file.add_argument('--mode', required=True, type=str,
+                             choices=["overall", "content", "outline", "richness"],
+                             help="Evaluation mode")
+    parser_file.add_argument('--setting', default='with_ref', type=str,
+                             help="Settings for content mode")
+    parser_file.add_argument('--topic', required=True, type=str,
+                             help="Topic to evaluate")
+    parser_file.add_argument('--method', default='AutoSurvey', type=str,
+                             help="Method to evaluate")
+    parser_file.add_argument('--model', default='gpt-4o-mini', type=str,
+                             help="Model to use")
+    parser_file.add_argument('--api_key', default='', type=str,
+                             help="API key")
+    parser_file.add_argument('--api_url', default='', type=str,
+                             help="API URL")
+
+    # dir sub-command
+    parser_dir = subparsers.add_parser("dir", help="Evaluate all topics in a directory and compute averages")
+    parser_dir.add_argument('--mode', required=True, type=str,
+                            choices=["overall", "content", "outline", "richness"],
+                            help="Evaluation mode")
+    parser_dir.add_argument('--setting', default='with_ref', type=str,
+                            help="Settings for content mode")
+    parser_dir.add_argument('--method', default='AutoSurvey', type=str,
+                            help="Method to evaluate")
+    parser_dir.add_argument('--model', default='gpt-4o-mini', type=str,
+                            help="Model to use")
+    parser_dir.add_argument('--api_key', default='', type=str,
+                            help="API key")
+    parser_dir.add_argument('--api_url', default='', type=str,
+                            help="API URL")
+
+    return parser
+
 
 
 if __name__ == "__main__":
-    args = get_parser()
+    args = get_parser().parse_args()
     main(args)
 
-
-
-# python run_content_eval.py --mode overall --model gpt-4o-mini --method LLMxMR-V2 --topic 'Multimodal Large Language Models' --api_key sk-YPCgrExDNPUoUCmvEfB2568c034c4bCeBa414fF43f1eEeDd --api_url https://api.vveai.com/v1
-
-# python run_content_eval.py --mode content --setting with_ref --model gpt-4o-mini --method AutoSurvey --topic 'Multimodal Large Language Models' --api_key sk-YPCgrExDNPUoUCmvEfB2568c034c4bCeBa414fF43f1eEeDd --api_url https://api.vveai.com/v1
-
-# python run_content_eval.py --mode content --setting without_ref_document --model gpt-4o-mini --method AutoSurvey --topic 'Multimodal Large Language Models' --api_key sk-YPCgrExDNPUoUCmvEfB2568c034c4bCeBa414fF43f1eEeDd --api_url https://api.vveai.com/v1
-
-# python run_content_eval.py --mode outline --model gpt-4o-mini --method AutoSurvey --topic 'Multimodal Large Language Models' --api_key sk-YPCgrExDNPUoUCmvEfB2568c034c4bCeBa414fF43f1eEeDd --api_url https://api.vveai.com/v1
-
-# python run_content_eval.py --mode richness --method AutoSurvey --topic 'Multimodal Large Language Models'

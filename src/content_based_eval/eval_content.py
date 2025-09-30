@@ -137,9 +137,11 @@ def evaluate_content_compare(topic, model, method, api_key, api_url):
 
     text = extract_text_from_md(f'../data/{method}/{topic}.md')
     ai_survey = drop_ref(text)
+    ai_survey = ai_survey[:100000]
 
     human_survey = extract_text_from_md(f'../data/HumanSurvey/{topic}.md')
     human_survey = drop_ref(human_survey)
+    human_survey = human_survey[:150000]
 
     survey_scores = []
 

@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-09-30 19:09:35",
+  "scope": "dir",
+  "mode": "overall",
+  "setting": "with_ref",
+  "model": "gpt-4o-mini",
+  "method": "LLMxMR-V2",
+  "topic": null,
+  "result": {
+    "content_avg": {
+      "coverage": 4.0,
+      "coherence": 4.0,
+      "depth": 4.0,
+      "focus": 4.5,
+      "fluency": 4.0
+    },
+    "outline_avg": {
+      "coverage": 3.833333333333333,
+      "relevance": 4.0,
+      "structure": 3.5
+    },
+    "richness_avg": {
+      "figures": 2.0,
+      "tables": 6.0,
+      "richness": 5.629653290287201
+    }
+  }
+}
