@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-09-30 18:19:52",
+  "mode": "outline",
+  "setting": "with_ref",
+  "model": "gpt-4o-mini",
+  "method": "AutoSurvey",
+  "topic": "Multimodal Large Language Models",
+  "result": {
+    "topic": "Multimodal Large Language Models",
+    "coverage_score_1": {
+      "response": "4",
+      "prompt_tokens": 1047,
+      "completion_tokens": 2,
+      "total_tokens": 1049
+    },
+    "relevance_score_1": {
+      "response": "4",
+      "prompt_tokens": 1035,
+      "completion_tokens": 2,
+      "total_tokens": 1037
+    },
+    "structure_score_1": {
+      "response": "4",
+      "prompt_tokens": 1051,
+      "completion_tokens": 2,
+      "total_tokens": 1053
+    },
+    "coverage_score_2": {
+      "response": "Score: 4",
+      "prompt_tokens": 1047,
+      "completion_tokens": 5,
+      "total_tokens": 1052
+    },
+    "relevance_score_2": {
+      "response": "4",
+      "prompt_tokens": 1035,
+      "completion_tokens": 2,
+      "total_tokens": 1037
+    },
+    "structure_score_2": {
+      "response": "4",
+      "prompt_tokens": 1051,
+      "completion_tokens": 2,
+      "total_tokens": 1053
+    },
+    "coverage_score_3": {
+      "response": "3",
+      "prompt_tokens": 1047,
+      "completion_tokens": 2,
+      "total_tokens": 1049
+    },
+    "relevance_score_3": {
+      "response": "4",
+      "prompt_tokens": 1035,
+      "completion_tokens": 1,
+      "total_tokens": 1036
+    },
+    "structure_score_3": {
+      "response": "4",
+      "prompt_tokens": 1051,
+      "completion_tokens": 2,
+      "total_tokens": 1053
+    }
+  }
+}

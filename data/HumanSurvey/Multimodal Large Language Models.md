@@ -388,7 +388,7 @@ Training- free. With abundant prior knowledge stored in pre- trained LLMs, an in
 
 Finetuning. Some works adopt further finetuning to improve the planning abilities with respect to tool usage [107] or to improve localization capabilities [142], [205] of the system. For example, GPT4Tools [107] introduces the instruction- tuning approach (see  $\S 3.2)$  .Accordingly, a new tool- related instruction dataset is collected and used to finetune the model.
 
-### 7.3.3 Functions
+#### 7.3.3 Functions
 
 In order to further inspect what roles LLMs exactly play in LLM- Aided Visual Reasoning systems, existing related works are divided into three types:
 

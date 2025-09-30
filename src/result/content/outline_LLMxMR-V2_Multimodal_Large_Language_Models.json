@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-09-30 18:23:22",
+  "mode": "outline",
+  "setting": "with_ref",
+  "model": "gpt-4o-mini",
+  "method": "LLMxMR-V2",
+  "topic": "Multimodal Large Language Models",
+  "result": {
+    "topic": "Multimodal Large Language Models",
+    "coverage_score_1": {
+      "response": "4",
+      "prompt_tokens": 923,
+      "completion_tokens": 2,
+      "total_tokens": 925
+    },
+    "relevance_score_1": {
+      "response": "4",
+      "prompt_tokens": 911,
+      "completion_tokens": 2,
+      "total_tokens": 913
+    },
+    "structure_score_1": {
+      "response": "4",
+      "prompt_tokens": 927,
+      "completion_tokens": 1,
+      "total_tokens": 928
+    },
+    "coverage_score_2": {
+      "response": "4",
+      "prompt_tokens": 923,
+      "completion_tokens": 2,
+      "total_tokens": 925
+    },
+    "relevance_score_2": {
+      "response": "4",
+      "prompt_tokens": 911,
+      "completion_tokens": 2,
+      "total_tokens": 913
+    },
+    "structure_score_2": {
+      "response": "4",
+      "prompt_tokens": 927,
+      "completion_tokens": 2,
+      "total_tokens": 929
+    },
+    "coverage_score_3": {
+      "response": "4",
+      "prompt_tokens": 923,
+      "completion_tokens": 1,
+      "total_tokens": 924
+    },
+    "relevance_score_3": {
+      "response": "4",
+      "prompt_tokens": 911,
+      "completion_tokens": 2,
+      "total_tokens": 913
+    },
+    "structure_score_3": {
+      "response": "4",
+      "prompt_tokens": 927,
+      "completion_tokens": 1,
+      "total_tokens": 928
+    }
+  }
+}

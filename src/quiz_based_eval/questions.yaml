@@ -1,0 +1,70 @@
+levels:
+  - name: Easy
+    description: "Foundational Understanding and Concept Identification"
+    angles:
+      - name: Basic concepts (Need the whole text as input)
+        questions:
+          - question: "What is the rigorous definition of {topic}?"
+            explanation: "考查对概念定义的初步理解。"
+          - question: "Describe the underlying motivations for research on {topic}, including the core problems it aims to address and the primary application scenarios."
+            explanation: "考察背景和发展原因。"
+          - question: "What are the key challenges that remain to be addressed in {topic}?"
+            explanation: "考察survey是否阐述了challenge。"
+          - question: "What are the key techniques or methods of {topic}?"
+            explanation: "考察survey是否涵盖主要技术方法。"
+      - name: Knowledge Organization and Classification (Need the whole text)
+        questions:
+          - question: "Does {topic} involve any classification of techniques? If so, list the classification criteria and the resulting categories."
+            explanation: "考察survey是否考虑到技术分类。"
+          - question: "Is the classification relatively stable across different time periods and research domains, or does it present well-substantiated innovations?"
+            explanation: "考察survey的分类标准有效性。"
+          - question: "Does the classification of techniques within {topic} reflect a logical hierarchy or sequence, such as progressing from general to specific or from specific to general?"
+            explanation: "考察survey分类后的行文顺序是否合理。"
+          - question: "Does the classification of this {topic} contain any categories that are clearly redundant, overlapping, or improperly mutually exclusive?"
+            explanation: "检测survey分类是否有重复等问题。"
+      - name: Historical Understanding (Need the whole text)
+        questions:
+          - question: "List the key stages and evolutionary trajectory of {topic} from its origin to its current state."
+            explanation: "考察survey是否理清了历史脉络。"
+          - question: "Are the key years, figures, and technological events of {topic} consistent with the authoritative literature or official sources cited by the topic itself?"
+            explanation: "考察survey历史节点正确性。"
+
+  - name: Medium
+    description: "In-Depth Principles and Evaluation"
+    angles:
+      - name: Algorithmic Principles
+        questions:
+          - question: "Are the main algorithms described in {topic} consistent with the original papers or authoritative sources?"
+            explanation: "衡量survey算法正确性。"
+          - question: "Are the abstract principles in {topic} concretely presented through examples, diagrams, or pseudocode?"
+            explanation: "衡量概念解释是否易懂,是否含有伪代码，图片，表格等。"
+      - name: Practical Guidance
+        questions:
+          - question: "Does {topic} include detailed implementation steps, configurations, parameter selections, or code snippets for its key techniques?"
+            explanation: "衡量survey是否有足够的工程指导效果。"
+          - question: "List the practical application methods, applicable conditions, and limitations of {topic} techniques in real-world scenarios."
+            explanation: "衡量survey是否有实际应用的详细分析。"
+          - question: "Do the key techniques of {topic} include analyses of specific real-world application case examples?"
+            explanation: "衡量survey是否有具体应用案例分析。"
+      - name: Performance Analysis
+        questions:
+          - question: "List the main advantages and disadvantages of the key techniques for {topic}."
+            explanation: "考察survey是否考虑到技术的评价/优劣势。"
+          - question: "For the various techniques involved in {topic}, which performance metrics and evaluation methods does the survey use for each?"
+            explanation: "衡量survey涉及的技术评估方法合理性和完整性。"
+          - question: "Does the performance analysis of {topic} avoid subjective evaluation and base its conclusions on clear and accurate data"
+            explanation: "衡量survey是否有客观数据佐证性能分析的结论。"
+
+  - name: Hard
+    description: "Problem Insight and Forward-Looking Predictions"
+    angles:
+      - name: Predictions
+        questions:
+          - question: "Does the survey provide clear predictions regarding future research directions or technological developments?"
+            explanation: "强调survey在研究趋势上的预测认知。"
+          - question: "Does the survey take into account the uncertainty, potential risks, or limiting conditions associated with its predictions?"
+            explanation: "衡量survey是否对预测的内容有中肯严谨的全面评估。"
+          - question: "Does the survey propose any innovative contributions?"
+            explanation: "衡量survey对研究趋势和内容的深刻理解和运用能力。"
+          - question: "Are the survey’s predictions about {topic} grounded in accurate current technologies and methods?"
+            explanation: "衡量研究趋势的提出是否有严谨支撑。"
