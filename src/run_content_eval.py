@@ -9,24 +9,20 @@ from pathlib import Path
 
 
 def save_result(result, args, filename_suffix=""):
-
+    """Save evaluation results to JSON"""
     os.makedirs("result/content", exist_ok=True)
 
-    topic_safe = args.topic.replace(" ", "_") if hasattr(args, "topic") else "ALL"
-
     if args.mode == 'content':
-        filename = f"result/content/{args.mode}_{args.setting}_{args.method}_{topic_safe}{filename_suffix}.json"
+        filename = f"result/content/{args.mode}_{args.setting}_{args.method}{filename_suffix}.json"
     else:
-        filename = f"result/content/{args.mode}_{args.method}_{topic_safe}{filename_suffix}.json"
+        filename = f"result/content/{args.mode}_{args.method}{filename_suffix}.json"
 
     record = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "scope": args.scope,
         "mode": args.mode,
         "setting": getattr(args, "setting", None),
         "model": args.model,
         "method": args.method,
-        "topic": getattr(args, "topic", None),
         "result": result
     }
 
@@ -37,7 +33,7 @@ def save_result(result, args, filename_suffix=""):
 
 
 def run_single(args, topic):
-
+    """Run evaluation for a single topic (file)"""
     model, api_key, api_url = args.model, args.api_key, args.api_url
     method = args.method
     mode = args.mode
@@ -91,119 +87,65 @@ def run_single(args, topic):
 
 
 def main(args):
-    if args.scope == "file":
-        # single file
-        if args.mode == "overall":
-            print("========== Overall Evaluation (File) ==========")
-            topic = args.topic
+    data_dir = Path(f"../data/{args.method}")
+    topics = [f.stem for f in data_dir.glob("*.md")]
 
-            content_scores = run_single(argparse.Namespace(**{**vars(args), "mode": "content", "setting": "with_ref"}), topic)
-            outline_scores = run_single(argparse.Namespace(**{**vars(args), "mode": "outline"}), topic)
-            richness_scores = run_single(argparse.Namespace(**{**vars(args), "mode": "richness"}), topic)
+    print(f'Found {len(topics)} .md files in {data_dir}')
 
-            overall = {"content": content_scores, "outline": outline_scores, "richness": richness_scores}
-            save_result(overall, args)
+    if not topics:
+        print(f"No .md files found in {data_dir}")
+        return
 
-            print("---- Content ----")
-            print(content_scores)
-            print("---- Outline ----")
-            print(outline_scores)
-            print("---- Richness ----")
-            print(richness_scores)
+    if args.mode == "overall":
+        all_content, all_outline, all_richness = [], [], []
+        for topic in topics:
+            all_content.append(run_single(argparse.Namespace(**{**vars(args), "mode": "content", "setting": "with_ref"}), topic))
+            all_outline.append(run_single(argparse.Namespace(**{**vars(args), "mode": "outline"}), topic))
+            all_richness.append(run_single(argparse.Namespace(**{**vars(args), "mode": "richness"}), topic))
 
-        else:
-            scores = run_single(args, args.topic)
-            save_result(scores, args)
-            print(f"========== {args.mode.capitalize()} Evaluation (File) ==========")
-            print(scores)
+        def avg_dict(list_of_dicts):
+            return {k: sum(d[k] for d in list_of_dicts) / len(list_of_dicts) for k in list_of_dicts[0]}
 
-    elif args.scope == "dir":
-        # directory
-        data_dir = Path(f"../data/{args.method}")
-        topics = [f.stem for f in data_dir.glob("*.md")]
-        print(f"Find {len(topics)} survey files in {data_dir}.")
+        overall = {
+            "content_avg": avg_dict(all_content),
+            "outline_avg": avg_dict(all_outline),
+            "richness_avg": avg_dict(all_richness)
+        }
+        save_result(overall, args)
+        print("========== Overall Evaluation ==========")
+        print(overall)
 
-        if args.mode == "overall":
-            all_content, all_outline, all_richness = [], [], []
-            for topic in topics:
-                all_content.append(run_single(argparse.Namespace(**{**vars(args), "mode": "content", "setting": "with_ref"}), topic))
-                all_outline.append(run_single(argparse.Namespace(**{**vars(args), "mode": "outline"}), topic))
-                all_richness.append(run_single(argparse.Namespace(**{**vars(args), "mode": "richness"}), topic))
+    else:
+        all_scores = []
+        for topic in topics:
+            all_scores.append(run_single(args, topic))
+        avg_scores = {k: sum(s[k] for s in all_scores) / len(all_scores) for k in all_scores[0]}
+        save_result(avg_scores, args)
+        print(f"========== {args.mode.capitalize()} Evaluation ==========")
+        print(avg_scores)
 
-            def avg_dict(list_of_dicts):
-                return {k: sum(d[k] for d in list_of_dicts) / len(list_of_dicts) for k in list_of_dicts[0]}
-
-            avg_content = avg_dict(all_content)
-            avg_outline = avg_dict(all_outline)
-            avg_richness = avg_dict(all_richness)
-
-            overall = {"content_avg": avg_content, "outline_avg": avg_outline, "richness_avg": avg_richness}
-            save_result(overall, args, filename_suffix="_dir")
-
-            print("========== Overall Evaluation (Dir) ==========")
-            print("---- Content (avg) ----")
-            print(avg_content)
-            print("---- Outline (avg) ----")
-            print(avg_outline)
-            print("---- Richness (avg) ----")
-            print(avg_richness)
-
-        else:
-            all_scores = []
-            for topic in topics:
-                all_scores.append(run_single(args, topic))
-            avg_scores = {k: sum(s[k] for s in all_scores) / len(all_scores) for k in all_scores[0]}
-            save_result(avg_scores, args, filename_suffix="_dir")
-
-            print(f"========== {args.mode.capitalize()} Evaluation (Dir) ==========")
-            print(avg_scores)
 
 
 def get_parser():
     parser = argparse.ArgumentParser(description="SurveyBench Evaluation")
 
-    subparsers = parser.add_subparsers(dest="scope", required=True,
-                                       help="Choose the evaluation scope: file or dir")
-
-    # file sub-command
-    parser_file = subparsers.add_parser("file", help="Evaluate a single topic")
-    parser_file.add_argument('--mode', required=True, type=str,
-                             choices=["overall", "content", "outline", "richness"],
-                             help="Evaluation mode")
-    parser_file.add_argument('--setting', default='with_ref', type=str,
-                             help="Settings for content mode")
-    parser_file.add_argument('--topic', required=True, type=str,
-                             help="Topic to evaluate")
-    parser_file.add_argument('--method', default='AutoSurvey', type=str,
-                             help="Method to evaluate")
-    parser_file.add_argument('--model', default='gpt-4o-mini', type=str,
-                             help="Model to use")
-    parser_file.add_argument('--api_key', default='', type=str,
-                             help="API key")
-    parser_file.add_argument('--api_url', default='', type=str,
-                             help="API URL")
-
-    # dir sub-command
-    parser_dir = subparsers.add_parser("dir", help="Evaluate all topics in a directory and compute averages")
-    parser_dir.add_argument('--mode', required=True, type=str,
-                            choices=["overall", "content", "outline", "richness"],
-                            help="Evaluation mode")
-    parser_dir.add_argument('--setting', default='with_ref', type=str,
-                            help="Settings for content mode")
-    parser_dir.add_argument('--method', default='AutoSurvey', type=str,
-                            help="Method to evaluate")
-    parser_dir.add_argument('--model', default='gpt-4o-mini', type=str,
-                            help="Model to use")
-    parser_dir.add_argument('--api_key', default='', type=str,
-                            help="API key")
-    parser_dir.add_argument('--api_url', default='', type=str,
-                            help="API URL")
+    parser.add_argument('--mode', required=True, type=str,
+                        choices=["overall", "content", "outline", "richness"],
+                        help="Evaluation mode")
+    parser.add_argument('--setting', default='with_ref', type=str,
+                        help="Settings for content mode")
+    parser.add_argument('--method', default='AutoSurvey', type=str,
+                        help="Method to evaluate")
+    parser.add_argument('--model', default='gpt-4o-mini', type=str,
+                        help="Model to use")
+    parser.add_argument('--api_key', default='', type=str,
+                        help="API key")
+    parser.add_argument('--api_url', default='', type=str,
+                        help="API URL")
 
     return parser
-
 
 
 if __name__ == "__main__":
     args = get_parser().parse_args()
     main(args)
-
