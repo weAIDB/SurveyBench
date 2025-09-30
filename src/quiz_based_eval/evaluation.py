@@ -4,7 +4,7 @@ import json
 import os
 from datetime import datetime
 from typing import Dict, Any, List
-from api_services import *
+from .api_services import *
 
 
 class EvaluationService:
@@ -539,9 +539,6 @@ def ground_truth_answer(tool_name: str):
         print(f"Evaluation mode: {mode}")
         print(f"Score range: {score_range[0]} - {score_range[1]}")
 
-        # save_results_to_json(parse_json_results(machine_path), "machine_mid_save.json", {"score_range": score_range})
-        # save_results_to_json(parse_json_results(human_path), "human_mid_save.json", {"score_range": score_range})
-
         # 初始化模型和 evaluator （保持原有逻辑）
         model = ChatService()
 
@@ -585,16 +582,4 @@ def ground_truth_answer(tool_name: str):
 
 
 if __name__ == "__main__":
-    # You can uncomment this to run the example instead of command-line args
-    # run_example_evaluation()
-
-    # ../data/HumanSurvey/template_answers/3D Gaussian Splatting_answer_for_template.json
-    # ../data/AutoSurvey/template_answers/3D Gaussian Splatting_answer_for_template.json
     main()
-
-    # tool_list = [
-    #     "DeepResearch"
-    # ]
-    #
-    # for tool_name in tool_list:
-    #     ground_truth_answer(tool_name)

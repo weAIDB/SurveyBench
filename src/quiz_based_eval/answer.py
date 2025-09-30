@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
-from api_services import *
+from .api_services import *
 
 logger = logging.getLogger(__name__)
 
