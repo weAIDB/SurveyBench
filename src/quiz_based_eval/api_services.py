@@ -4,23 +4,30 @@ import numpy as np
 from tqdm import tqdm
 
 
-API_KEY = "sk-YROcKnB4CrsjqX8x3lPfzLUwd6mxejffVEqxgy1wySxoIE7p"
-BAIDU_API_KEY = "sk-9333c8120e384860ba15973144a06201"
-EMBEDDING_MODEL = "text-embedding-3-small"
-LLM_MODEL = "gpt-4o-mini"
-QWEN_MODEL = "qwen-flash"
-BASE_URL="https://api.aiaiapi.com/v1/"
-DEFAULT_HEADERS={"x-foo": "true"}
-DIMENSION = 1536
+LLM_API_KEY = None
+EMB_API_KEY = None
+EMBEDDING_MODEL = None
+LLM_MODEL = None
+LLM_URL=None
+EMB_URL=None
+DIMENSION = None
 
 
 class EmbeddingService:
-    def __init__(self, api_key=API_KEY, base_url=BASE_URL):
+    def __init__(self, api_key: str | None = None, base_url: str | None = None):
         """
         初始化远程 embedding 服务
         api_key: 服务端密钥
         base_url: 可选，如果是官方 OpenAI，不填
         """
+        api_key = api_key or EMB_API_KEY
+        base_url = base_url or EMB_URL
+
+        if not api_key or not base_url:
+            raise ValueError(
+                "请提供 api_key 和 base_url")
+        print("API_KEY:", EMB_API_KEY)
+        print("base_url:", base_url)
         self.client = OpenAI(api_key=api_key, base_url=base_url)
 
     def get_embedding(self, texts, batch_size=None, show_progress_bar=False):
@@ -62,31 +69,39 @@ class EmbeddingService:
 
 # chat_service
 class ChatService:
-    def __init__(self, api_key=API_KEY, base_url=BASE_URL, default_headers=DEFAULT_HEADERS):
+    def __init__(self, api_key: str | None = None, base_url: str | None = None):
         """
-        初始化远程 Chat 服务
+        初始化远程 LLM 服务
         api_key: 远程服务密钥
-        base_url: 可选，第三方网关 URL
-        default_headers: 可选，网关要求的自定义 header
+        base_url: 网关 URL
         """
+        api_key = api_key or LLM_API_KEY
+        base_url = base_url or LLM_URL
+
+        if not api_key or not base_url:
+            raise ValueError("请提供 api_key 和 base_url：要么通过参数传入，要么在 main 中赋值 module.LLM_API_KEY/module.LLM_URL")
         self.client = OpenAI(
             api_key=api_key,
             base_url=base_url,
-            default_headers=default_headers
         )
-        # # 如果需要自定义 header
-        # if default_headers:
-        #     self.client.default_headers = default_headers
 
     def send_message(self, messages):
         """
         messages: list of dict, [{"role": "user", "content": "..."}]
         返回：模型的文本回答
         """
-        resp = self.client.chat.completions.create(
-            model=LLM_MODEL,   # 可替换成你网关支持的版本
-            messages=messages
-        )
+        print("MODEL:", LLM_MODEL)
+        if LLM_MODEL.startswith('qwen'):
+            resp = self.client.chat.completions.create(
+                model=LLM_MODEL,  # 可替换成你网关支持的版本
+                messages=messages,
+                extra_body={"enable_thinking": False},
+            )
+        else:
+            resp = self.client.chat.completions.create(
+                model=LLM_MODEL,  # 可替换成你网关支持的版本
+                messages=messages
+            )
         return resp.choices[0].message.content
 
 if __name__ == "__main__":

@@ -8,19 +8,14 @@ from datetime import datetime
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
+import quiz_based_eval.api_services as model_service
 
 from quiz_based_eval.answer import SurveyContextBuilder, load_json_questions
-from quiz_based_eval.api_services import *
+# from quiz_based_eval.api_services import *
 from quiz_based_eval.evaluation import EvaluationService, save_results_to_json, print_summary_stats
 from quiz_based_eval.generate_questions import drop_ref, MarkdownParser, SurveyQAGenerator, parse_yaml_questions
 from quiz_based_eval.compare_result_statistics import get_compare_final_results
 from quiz_based_eval.score_specific_statistics import get_final_specific_results
-
-
-llm_model = ChatService()
-emb_model = EmbeddingService()
-dimension = DIMENSION
-
 
 logger = logging.getLogger(__name__)
 logger.info("程序启动，日志等级=%s", "logging.INFO")
@@ -61,7 +56,7 @@ def setup_logger(level: str, file: str | None):
     )
 
 
-def compare_dirs(survey_dir: Path, human_dir: Path, output_dir: Path, temp_dir: Path):
+def compare_dirs(survey_dir: Path, human_dir: Path, output_dir: Path, temp_dir: Path, llm_model, emb_model, dimension):
     print(f"To test: {survey_dir}")
     print(f"Human: {human_dir}")
     output_dir = Path("../results") / output_dir
@@ -85,11 +80,14 @@ def compare_dirs(survey_dir: Path, human_dir: Path, output_dir: Path, temp_dir: 
             survey_dir / Path(f"{filename}.md"),
             human_dir / Path(f"{filename}.md"),
             output_dir,
-            temp_dir
+            temp_dir,
+            llm_model,
+            emb_model,
+            dimension
         )
 
 
-def test_single_survey(survey: Path, human: Path, output: Path, temp_dir: Path):
+def test_single_survey(survey: Path, human: Path, output: Path, temp_dir: Path, llm_model, emb_model, dimension):
     with open(survey, 'r', encoding='utf-8') as f:
         survey_text = f.read()
     with open(human, 'r', encoding='utf-8') as f:
@@ -161,7 +159,7 @@ def compare_evaluation(survey_answer: Path, human_answer: Path, clean_name: str,
     print(f"Evaluation mode: {mode}")
     print(f"Score range: {score_range[0]} - {score_range[1]}")
 
-    model = ChatService()
+    model = model_service.ChatService()
 
     evaluator = EvaluationService(model=model, score_range=tuple(score_range))
 
@@ -211,7 +209,7 @@ def ground_truth_evaluation(survey_answer: Path, human_truth: Path, clean_name: 
     print(f"Evaluation mode: {mode}")
     print(f"Score range: {score_range[0]} - {score_range[1]}")
 
-    model = ChatService()
+    model = model_service.ChatService()
 
     evaluator = EvaluationService(model=model, score_range=tuple(score_range))
 
@@ -259,16 +257,43 @@ def main():
                             help="人工 survey 文件夹路径")
     parser.add_argument("--output_dir", type=Path, required=True,
                             help="结果输出文件夹路径")
+    parser.add_argument("--llm", default='gpt-4o-mini', type=str,
+                        help="LLM to use")
+    parser.add_argument("--llm_api_key", default='', type=str,
+                        help="LLM API key")
+    parser.add_argument("--llm_api_url", default='', type=str,
+                        help="LLM API URL")
+    parser.add_argument("--emb_model", default='text-embedding-3-small', type=str,
+                        help="Embedding model to use")
+    parser.add_argument("--emb_dimension", default='', type=str,
+                        help="Embedding dimension to use")
+    parser.add_argument("--emb_api_key", default='', type=str,
+                        help="Embedding API key")
+    parser.add_argument("--emb_api_url", default='', type=str,
+                        help="Embedding API URL")
 
     args = parser.parse_args()
-    setup_logger("logging.INFO", "log.txt")
+    setup_logger("logging.INFO", "../results/quiz_logs.txt")
+
+    model_service.LLM_API_KEY = args.llm_api_key
+    model_service.LLM_URL = args.llm_api_url
+    model_service.EMB_API_KEY = args.emb_api_key
+    model_service.EMB_URL = args.emb_api_url
+    model_service.DIMENSION = int(args.emb_dimension)
+
+    model_service.EMBEDDING_MODEL = args.emb_model
+    model_service.LLM_MODEL = args.llm
+
+    llm_model = model_service.ChatService()
+    emb_model = model_service.EmbeddingService()
+    dimension = model_service.DIMENSION
 
     temp_files_dir = Path("../temp_output")
     if temp_files_dir.exists():
         shutil.rmtree(temp_files_dir)
     temp_files_dir.mkdir(parents=True, exist_ok=True)
 
-    compare_dirs(args.survey_dir, args.human_dir, args.output_dir, temp_files_dir)
+    compare_dirs(args.survey_dir, args.human_dir, args.output_dir, temp_files_dir, llm_model, emb_model, dimension)
 
 if __name__ == "__main__":
     main()
