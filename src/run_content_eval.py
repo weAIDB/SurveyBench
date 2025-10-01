@@ -15,12 +15,12 @@ def save_result(result, args):
     if args.mode == 'content':
         filename = os.path.join(
             args.output_dir,
-            f"{args.mode}_{args.setting}_{args.method}.json"
+            f"{args.mode}_{args.setting}.json"
         )
     else:
         filename = os.path.join(
             args.output_dir,
-            f"{args.mode}_{args.method}.json"
+            f"{args.mode}.json"
         )
 
     record = {
@@ -28,7 +28,6 @@ def save_result(result, args):
         "mode": args.mode,
         "setting": getattr(args, "setting", None),
         "model": args.model,
-        "method": args.method,
         "result": result
     }
 
@@ -42,13 +41,14 @@ def save_result(result, args):
 def run_single(args, topic):
     """Run evaluation for a single topic (file)"""
     model, api_key, api_url = args.model, args.api_key, args.api_url
-    method = args.method
     mode = args.mode
     setting = getattr(args, "setting", "with_ref")
+    survey_dir = os.path.join(args.survey_dir, topic + ".md")
+    human_dir = os.path.join(args.human_dir, topic + ".md")
 
     if mode == "content":
         if setting == "with_ref":
-            res = evaluate_content_compare(topic, model, method, api_key, api_url)
+            res = evaluate_content_compare(topic, model, survey_dir, human_dir, api_key, api_url)
             return {
                 "coverage": int(res[0]["coverage_score"]["response"]),
                 "coherence": int(res[0]["coherence_score"]["response"]),
@@ -57,7 +57,7 @@ def run_single(args, topic):
                 "fluency": int(res[0]["fluency_score"]["response"]),
             }
         elif setting == "without_ref_chapter":
-            res = evaluate_content_chapter(topic, model, method, api_key, api_url)
+            res = evaluate_content_chapter(topic, model, survey_dir, api_key, api_url)
             n = len(res)
             return {
                 "coverage": sum(int(x["coverage_score"]["response"]) for x in res) / n,
@@ -67,7 +67,7 @@ def run_single(args, topic):
                 "fluency": sum(int(x["fluency_score"]["response"]) for x in res) / n,
             }
         elif setting == "without_ref_document":
-            res = evaluate_content_document(topic, model, method, api_key, api_url)
+            res = evaluate_content_document(topic, model, survey_dir, api_key, api_url)
             return {
                 "coverage": int(res[0]["coverage_score"]["response"]),
                 "coherence": int(res[0]["coherence_score"]["response"]),
@@ -77,7 +77,7 @@ def run_single(args, topic):
             }
 
     elif mode == "outline":
-        res = evaluate_outline(topic, model, method, api_key, api_url)
+        res = evaluate_outline(topic, model, survey_dir, human_dir, api_key, api_url)
         def parse(val):
             return int(val.strip().replace("Score:", "").replace("score:", "").replace("Score", ""))
         return {
@@ -87,14 +87,14 @@ def run_single(args, topic):
         }
 
     elif mode == "richness":
-        res = get_richness(f'../data/{method}/{topic}.md')
+        res = get_richness(survey_dir)
         return {"figures": res[0], "tables": res[1], "richness": res[3]}
 
     return {}
 
 
 def main(args):
-    data_dir = Path(f"../data/{args.method}")
+    data_dir = Path(args.survey_dir)
     topics = [f.stem for f in data_dir.glob("*.md")]
 
     print(f'Found {len(topics)} .md files in {data_dir}')
@@ -134,23 +134,25 @@ def main(args):
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(description="SurveyBench Evaluation")
+    parser = argparse.ArgumentParser(description="")
 
     parser.add_argument('--mode', required=True, type=str,
                         choices=["overall", "content", "outline", "richness"],
                         help="Evaluation mode")
     parser.add_argument('--setting', default='with_ref', type=str,
                         help="Settings for content mode")
-    parser.add_argument('--method', default='AutoSurvey', type=str,
-                        help="Method to evaluate")
     parser.add_argument('--model', default='gpt-4o-mini', type=str,
                         help="Model to use")
     parser.add_argument('--api_key', default='', type=str,
                         help="API key")
     parser.add_argument('--api_url', default='', type=str,
                         help="API URL")
-    parser.add_argument('--output_dir', default='./result/content', type=str, 
+    parser.add_argument('--output_dir', default='./result/content/AutoSurvey', type=str, 
                         help="Output directory for results")
+    parser.add_argument('--survey_dir', default='../data/AutoSurvey', type=str,
+                        help="Directory for surveys to evaluate")
+    parser.add_argument('--human_dir', default='../data/HumanSurvey', type=str,
+                        help="Directory for human surveys")
 
     return parser
 

@@ -59,7 +59,7 @@ Here is an example command to evaluate the `AutoSurvey` method on content qualit
 
 ```bash
 cd src
-python run_content_eval.py --mode overall --method AutoSurvey --model gpt-4o-mini --api_key sk_xxx --api_url xxx --output_dir './result/content'
+python run_content_eval.py --mode overall --survey_dir '../data/AutoSurvey' --human_dir '../data/HumanSurvey' --model gpt-4o-mini --api_key sk_xxx --api_url xxx --output_dir './result/content/AutoSurvey'
 ```
 
 **Arguments:**
@@ -73,11 +73,12 @@ python run_content_eval.py --mode overall --method AutoSurvey --model gpt-4o-min
   - `with_ref` → Compare LLM survey against the human-written survey.
   - `without_ref_chapter` → Evaluate content chapter by chapter without human reference.
   - `without_ref_document` → Evaluate the whole document without human reference.
-- `--method` : The method name (directory under ./data/) to be evaluated, e.g. AutoSurvey, SurveyForge, LLMxMR-V2.
 - `--model` : The model used for evaluation (e.g. gpt-4o-mini).
 - `--api_key` : API key for the evaluation model service.
 - `--api_url` : API endpoint URL for the evaluation model service.
-- `--output_dir` : Directory to save evaluation results (default: ./result/content).
+- `--output_dir` : Directory to save evaluation results.
+- `--survey_dir`: Directory for survey files to evaluate.
+- `--human_dir`: Directory for human-written survey files.
 
 
 

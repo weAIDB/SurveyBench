@@ -61,8 +61,9 @@ def normalize_score(text):
 
 # w/o human survey as Ref.
 # chapter-level evaluation
-def evaluate_content_chapter(topic, model, method, api_key, api_url):
-    text = extract_text_from_md(f'../data/{method}/{topic}.md')
+def evaluate_content_chapter(topic, model, survey_dir, api_key, api_url):
+    # text = extract_text_from_md(f'../data/{method}/{topic}.md')
+    text = extract_text_from_md(survey_dir)
     text = drop_ref(text)
     sections = extract_sections_from_md(text)
 
@@ -102,8 +103,9 @@ def evaluate_content_chapter(topic, model, method, api_key, api_url):
 
 # w/o human survey as Ref.
 # document-level evaluation
-def evaluate_content_document(topic, model, method, api_key, api_url):
-    text = extract_text_from_md(f'../data/{method}/{topic}.md')
+def evaluate_content_document(topic, model, survey_dir, api_key, api_url):
+    # text = extract_text_from_md(f'../data/{method}/{topic}.md')
+    text = extract_text_from_md(survey_dir)
     text = drop_ref(text)
 
     survey_scores = []
@@ -133,13 +135,14 @@ def evaluate_content_document(topic, model, method, api_key, api_url):
 
 
 # w/ human survey as Ref.
-def evaluate_content_compare(topic, model, method, api_key, api_url):
+def evaluate_content_compare(topic, model, survey_dir, human_dir, api_key, api_url):
 
-    text = extract_text_from_md(f'../data/{method}/{topic}.md')
-    ai_survey = drop_ref(text)
+    # text = extract_text_from_md(f'../data/{method}/{topic}.md')
+    ai_survey = extract_text_from_md(survey_dir)
+    ai_survey = drop_ref(ai_survey)
     ai_survey = ai_survey[:100000]
 
-    human_survey = extract_text_from_md(f'../data/HumanSurvey/{topic}.md')
+    human_survey = extract_text_from_md(human_dir)
     human_survey = drop_ref(human_survey)
     human_survey = human_survey[:150000]
 

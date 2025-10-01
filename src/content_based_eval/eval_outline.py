@@ -28,12 +28,12 @@ def extract_outline_from_md(text):
     return '\n'.join(lines)
 
 
-def evaluate_outline(topic, model, method, api_key, api_url):
+def evaluate_outline(topic, model, survey_dir, human_dir, api_key, api_url):
 
-    text = extract_text_from_md(f'../data/{method}/{topic}.md')
+    text = extract_text_from_md(survey_dir)
     outline = extract_outline_from_md(text)
 
-    human_survey = extract_text_from_md(f'../data/HumanSurvey/{topic}.md')
+    human_survey = extract_text_from_md(human_dir)
     human_outline = extract_outline_from_md(human_survey)
     # print(human_outline)
 
