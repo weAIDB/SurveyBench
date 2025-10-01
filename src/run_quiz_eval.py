@@ -11,7 +11,6 @@ from typing import List, Dict, Any, Optional, Tuple
 import quiz_based_eval.api_services as model_service
 
 from quiz_based_eval.answer import SurveyContextBuilder, load_json_questions
-# from quiz_based_eval.api_services import *
 from quiz_based_eval.evaluation import EvaluationService, save_results_to_json, print_summary_stats
 from quiz_based_eval.generate_questions import drop_ref, MarkdownParser, SurveyQAGenerator, parse_yaml_questions
 from quiz_based_eval.compare_result_statistics import get_compare_final_results

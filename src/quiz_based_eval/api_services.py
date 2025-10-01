@@ -93,13 +93,13 @@ class ChatService:
         print("MODEL:", LLM_MODEL)
         if LLM_MODEL.startswith('qwen'):
             resp = self.client.chat.completions.create(
-                model=LLM_MODEL,  # 可替换成你网关支持的版本
+                model=LLM_MODEL,
                 messages=messages,
                 extra_body={"enable_thinking": False},
             )
         else:
             resp = self.client.chat.completions.create(
-                model=LLM_MODEL,  # 可替换成你网关支持的版本
+                model=LLM_MODEL,
                 messages=messages
             )
         return resp.choices[0].message.content
