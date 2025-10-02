@@ -103,23 +103,14 @@ python run_quiz_eval.py \
 **Arguments:**
 
 - `--survey_dir` : Directory containing the generated survey files to evaluate.
-
 - `--human_dir` : Directory containing the human-written survey files.
-
 - `--output` : Directory to save evaluation results. Results will be stored in results/{your_output_dir}.
-
 - `--llm` : The LLM used as a judge for quiz evaluation (e.g., gpt-4o-mini).
-
 - `--llm_api_key` : API key for the LLM service.
-
 - `--llm_api_url` : API endpoint URL for the LLM service.
-
 - `--emb_model` : Embedding model used for semantic similarity calculation.
-
 - `--emb_dimension` : Dimension of the embedding model.
-
 - `--emb_api_key` : API key for the embedding model service.
-
 - `--emb_api_url` : API endpoint URL for the embedding model service.
 
 
