@@ -1,5 +1,5 @@
 <div align="center">
-<h1>SurveyBench: How Well Can LLM(-Agents) Write Academic Surveys?</h1>
+<h1>SurveyBench: Can LLM(-Agents) Write Academic Surveys that Align with Reader Needs?</h1>
 </div>
 
 ## Introduction
@@ -12,15 +12,6 @@ SurveyBench is a fine-grained, quiz-driven evaluation framework, featuring
 (1) typical survey topics source from recent 11,343 arXiv papers and corresponding 4,947 high-quality surveys; 
 (2) a multifaceted metric hierarchy that assesses the outline quality (e.g., coverage breadth, logical coherence), content quality (e.g., synthesis granularity, clarity of insights), and non-textual richness;
 (3) a dual-mode evaluation protocol that includes content-based and quiz-based answerability tests, explicitly aligned with readers’ informational needs.
-
-## Dataset Introduction
-Our survey topic acquisition process is divided into three stages. 
-
-First, we collect 127 candidate topics from authoritative computer science sources, including top conferences (e.g., ICLR, NeurIPS, CVPR, SIGMOD, SOSP), and refine them by removing duplicates and unifying terminology (e.g., merging “Brain-Computer Interfaces” and “Neural Coding”). 
-
-Second, for each refined topic, we cluster recent arXiv papers from the past three months by calculating embeddings (using the text-embedding-3-small model) from titles, abstracts, and key topics, and apply t-SNE for dimensionality reduction and visualization. As shown in Figure 4, we filter these topics based on publication volume, conceptual diversity, academic influence (citation counts and top-tier venue presence), and semantic overlap, ultimately selecting 9 key representative topics. 
-
-Finally, for each of the selected topics, we extract 4,947 survey papers from arXiv using “survey” or “review” keywords, and further filter them based on two criteria: (1) impact (citation counts from Semantic Scholar or arXiv-sanity), and (2) coverage depth (topical alignment with the retrieved papers), yielding a final set of 20 well-vetted topics for benchmark use.
 
 ## Usage
 
@@ -112,23 +103,14 @@ python run_quiz_eval.py \
 **Arguments:**
 
 - `--survey_dir` : Directory containing the generated survey files to evaluate.
-
 - `--human_dir` : Directory containing the human-written survey files.
-
 - `--output` : Directory to save evaluation results. Results will be stored in results/{your_output_dir}.
-
 - `--llm` : The LLM used as a judge for quiz evaluation (e.g., gpt-4o-mini).
-
 - `--llm_api_key` : API key for the LLM service.
-
 - `--llm_api_url` : API endpoint URL for the LLM service.
-
 - `--emb_model` : Embedding model used for semantic similarity calculation.
-
 - `--emb_dimension` : Dimension of the embedding model.
-
 - `--emb_api_key` : API key for the embedding model service.
-
 - `--emb_api_url` : API endpoint URL for the embedding model service.
 
 
@@ -152,3 +134,15 @@ Two types of JSON files are generated:
 | `better_answer_1_reasons` | List of questions where the human survey won, along with the LLM judge’s explanation. |
 | `category_stats` | Win–loss statistics across 7 predefined quiz categories. |
 | `total_questions` | Total number of quiz questions evaluated. |
+
+## Citation
+
+```
+@misc{sun2025surveybenchllmagentswriteacademic,
+      title={SurveyBench: How Well Can LLM(-Agents) Write Academic Surveys?}, 
+      author={Zhaojun Sun and Xuzhou Zhu and Xuanhe Zhou and Xin Tong and Shuo Wang and Jie Fu and Guoliang Li and Zhiyuan Liu and Fan Wu},
+      journal      = {arXiv Preprint},
+      url       = {https://arxiv.org/abs/2510.03120},
+      year         = {2025}
+}
+```
