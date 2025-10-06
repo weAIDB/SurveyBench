@@ -134,3 +134,17 @@ Two types of JSON files are generated:
 | `better_answer_1_reasons` | List of questions where the human survey won, along with the LLM judge’s explanation. |
 | `category_stats` | Win–loss statistics across 7 predefined quiz categories. |
 | `total_questions` | Total number of quiz questions evaluated. |
+
+## Citation
+
+```
+@misc{sun2025surveybenchllmagentswriteacademic,
+      title={SurveyBench: How Well Can LLM(-Agents) Write Academic Surveys?}, 
+      author={Zhaojun Sun and Xuzhou Zhu and Xuanhe Zhou and Xin Tong and Shuo Wang and Jie Fu and Guoliang Li and Zhiyuan Liu and Fan Wu},
+      year={2025},
+      eprint={2510.03120},a
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2510.03120}, 
+}
+```
