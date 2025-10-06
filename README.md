@@ -13,6 +13,15 @@ SurveyBench is a fine-grained, quiz-driven evaluation framework, featuring
 (2) a multifaceted metric hierarchy that assesses the outline quality (e.g., coverage breadth, logical coherence), content quality (e.g., synthesis granularity, clarity of insights), and non-textual richness;
 (3) a dual-mode evaluation protocol that includes content-based and quiz-based answerability tests, explicitly aligned with readers’ informational needs.
 
+## Dataset Introduction
+Our survey topic acquisition process is divided into three stages. 
+
+First, we collect 127 candidate topics from authoritative computer science sources, including top conferences (e.g., ICLR, NeurIPS, CVPR, SIGMOD, SOSP), and refine them by removing duplicates and unifying terminology (e.g., merging “Brain-Computer Interfaces” and “Neural Coding”). 
+
+Second, for each refined topic, we cluster recent arXiv papers from the past three months by calculating embeddings (using the text-embedding-3-small model) from titles, abstracts, and key topics, and apply t-SNE for dimensionality reduction and visualization. As shown in Figure 4, we filter these topics based on publication volume, conceptual diversity, academic influence (citation counts and top-tier venue presence), and semantic overlap, ultimately selecting 9 key representative topics. 
+
+Finally, for each of the selected topics, we extract 4,947 survey papers from arXiv using “survey” or “review” keywords, and further filter them based on two criteria: (1) impact (citation counts from Semantic Scholar or arXiv-sanity), and (2) coverage depth (topical alignment with the retrieved papers), yielding a final set of 20 well-vetted topics for benchmark use.
+
 ## Usage
 
 ### Data Prepration
