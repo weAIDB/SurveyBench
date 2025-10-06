@@ -1,5 +1,5 @@
 <div align="center">
-<h1>SurveyBench: How Well Can LLM(-Agents) Write Academic Surveys?</h1>
+<h1>SurveyBench: Can LLM(-Agents) Write Academic Surveys that Align with Reader Needs?</h1>
 </div>
 
 ## Introduction
@@ -141,10 +141,8 @@ Two types of JSON files are generated:
 @misc{sun2025surveybenchllmagentswriteacademic,
       title={SurveyBench: How Well Can LLM(-Agents) Write Academic Surveys?}, 
       author={Zhaojun Sun and Xuzhou Zhu and Xuanhe Zhou and Xin Tong and Shuo Wang and Jie Fu and Guoliang Li and Zhiyuan Liu and Fan Wu},
-      year={2025},
-      eprint={2510.03120},a
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2510.03120}, 
+      journal      = {arXiv Preprint},
+      url       = {https://arxiv.org/abs/2510.03120},
+      year         = {2025}
 }
 ```
