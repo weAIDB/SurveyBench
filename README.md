@@ -275,7 +275,7 @@ while newer topics often lack accessible references and well-formed frameworks.
 
 ```
 @misc{sun2025surveybenchllmagentswriteacademic,
-      title={SurveyBench: How Well Can LLM(-Agents) Write Academic Surveys?}, 
+      title={SurveyBench: Can LLM(-Agents) Write Academic Surveys that Align with Reader Needs?}, 
       author={Zhaojun Sun and Xuzhou Zhu and Xuanhe Zhou and Xin Tong and Shuo Wang and Jie Fu and Guoliang Li and Zhiyuan Liu and Fan Wu},
       journal      = {arXiv Preprint},
       url       = {https://arxiv.org/abs/2510.03120},
