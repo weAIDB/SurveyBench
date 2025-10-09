@@ -147,7 +147,7 @@ Two types of JSON files are generated:
 
 ## Experimental Results and Analysis
 
-We evaluate four typical methods to verify the effectiveness of SurveyBench, including **AutoSurvey** (GPT-4o), **SurveyForge** (GPT-4o), **LLM$\times$MapReduce-V2** (Gemini-flash-thinking), and **OpenAI-DeepResearch**.
+We evaluate four typical methods to verify the effectiveness of SurveyBench, including **AutoSurvey** (GPT-4o), **SurveyForge** (GPT-4o), **LLM×MapReduce-V2** (Gemini-flash-thinking), and **OpenAI-DeepResearch**.
 
 
 | Dimension             | **OpenAI-DR** | **AutoSurvey** | **SurveyForge** | **LLM×MR-V2** |
